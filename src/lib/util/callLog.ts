@@ -19,8 +19,14 @@ class CallLog {
   private runId: number | null = null;
   readonly counts = { tmdb: 0, omdb: 0, cacheHits: 0 };
 
+  /** Starts a fresh count. A warm serverless instance reuses this module, so
+   *  without the reset the second ingest of the day reports the first one's
+   *  calls on top of its own. */
   setRun(id: number | null) {
     this.runId = id;
+    this.counts.tmdb = 0;
+    this.counts.omdb = 0;
+    this.counts.cacheHits = 0;
   }
 
   record(s: CallStat) {

@@ -60,7 +60,15 @@ export async function matchTitle(
   const tries: SearchHit[] = [];
   try {
     if (year) tries.push(...(await search(name, mediaType, year)));
-    if (tries.length === 0) tries.push(...(await search(name, mediaType, null)));
+    // Letterboxd's year is occasionally the festival year rather than the
+    // release year, so a year-filtered search that finds nothing convincing
+    // is retried without the filter before giving up.
+    if (!tries.some((h) => similarity(name, h.title) >= 0.85)) {
+      const seen = new Set(tries.map((h) => h.tmdbId));
+      for (const h of await search(name, mediaType, null)) {
+        if (!seen.has(h.tmdbId)) tries.push(h);
+      }
+    }
   } catch {
     return { hit: null, method: 'unresolved', score: 0, candidates: [] };
   }

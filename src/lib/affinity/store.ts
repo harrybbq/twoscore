@@ -25,6 +25,9 @@ function rowToAffinity(r: any): AffinityRow {
     rewatchAffinity: Number(r.rewatch_affinity),
     bestTitle: r.best_title ?? null,
     bestRating: r.best_rating === null || r.best_rating === undefined ? null : Number(r.best_rating),
+    // Not persisted: only the leave-one-out training path needs it, and that
+    // path always builds the tables from the history rather than loading them.
+    secondBestRating: null,
   };
 }
 

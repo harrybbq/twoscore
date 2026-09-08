@@ -26,7 +26,10 @@ export interface AffinityRow {
   rewatchRate: number;
   rewatchAffinity: number;
   bestTitle: string | null;
+  /** Top two ratings, so a leave-one-out "is this collection loved?" test can
+   *  be exact rather than inferred from the mean. */
   bestRating: number | null;
+  secondBestRating: number | null;
 }
 
 export interface AffinityGlobals {

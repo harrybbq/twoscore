@@ -86,6 +86,7 @@ export class AffinityTables {
             rewatchAffinity: 0,
             bestTitle: null,
             bestRating: null,
+            secondBestRating: null,
           };
           this.rows.set(key, row);
         }
@@ -93,8 +94,11 @@ export class AffinityTables {
         row.sumRating += t.rating;
         if (t.hasLoggedRewatch) row.nRewatch += 1;
         if (row.bestRating === null || t.rating > row.bestRating) {
+          row.secondBestRating = row.bestRating;
           row.bestRating = t.rating;
           row.bestTitle = t.name;
+        } else if (row.secondBestRating === null || t.rating > row.secondBestRating) {
+          row.secondBestRating = t.rating;
         }
       }
       if (t.meta.collectionId && t.rating >= 4.0) this.lovedCollections.add(`c${t.meta.collectionId}`);
@@ -159,23 +163,24 @@ export class AffinityTables {
     };
   }
 
-  /** True if another entry in this collection was rated >= 4.0. */
+  /**
+   * True when another entry in this collection was rated >= 4.0.
+   *
+   * `excludeSelf` makes this exact under leave-one-out: if the title being
+   * scored *is* the collection's best entry, the test falls back to the
+   * second best, so a film is never its own evidence that you love the
+   * universe it belongs to.
+   */
   isLovedCollection(collectionId: string | null, excludeSelf?: { rating: number }): boolean {
     if (!collectionId) return false;
-    if (!this.lovedCollections.has(collectionId)) return false;
-    // If this row is the *only* >=4.0 entry, it is its own evidence — drop it.
-    if (excludeSelf && excludeSelf.rating >= 4.0) {
-      const row = this.rows.get(`collection:${collectionId}`);
-      if (row && row.n <= 1) return false;
-      if (row && row.bestRating !== null && row.n > 1) {
-        // Cheap conservative test: another entry must reach 4.0 without this one.
-        const restSum = row.sumRating - excludeSelf.rating;
-        const restN = row.n - 1;
-        if (restN > 0 && (row.bestRating > excludeSelf.rating || restSum / restN >= 4.0)) return true;
-        return false;
-      }
-    }
-    return true;
+    const row = this.rows.get(`collection:${collectionId}`);
+    if (!row) return this.lovedCollections.has(collectionId);
+    if (!excludeSelf) return (row.bestRating ?? 0) >= 4.0;
+    const best =
+      row.bestRating !== null && excludeSelf.rating >= row.bestRating
+        ? row.secondBestRating
+        : row.bestRating;
+    return (best ?? 0) >= 4.0;
   }
 
   byKind(kind: AffinityKind): AffinityRow[] {
