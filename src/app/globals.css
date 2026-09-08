@@ -1,0 +1,60 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+html,
+body {
+  background: #08090b;
+  color: #e3e9ef;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  font-feature-settings: 'tnum' 1, 'cv05' 1;
+}
+
+/* Numbers are the point of this app: line them up. */
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background: #2b323d;
+  border-radius: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+@layer components {
+  .panel {
+    @apply rounded-lg border border-ink-700 bg-ink-900;
+  }
+  .chip {
+    @apply inline-flex items-center rounded border border-ink-600 bg-ink-800 px-1.5 py-0.5 text-2xs text-ink-300;
+  }
+  .btn {
+    @apply inline-flex items-center justify-center gap-1.5 rounded border border-ink-600 bg-ink-800
+           px-2.5 py-1.5 text-xs font-medium text-ink-100 transition
+           hover:border-ink-500 hover:bg-ink-700 active:scale-[0.98]
+           disabled:cursor-not-allowed disabled:opacity-40;
+  }
+  .btn-primary {
+    @apply border-signal-dim bg-signal-dim/25 text-signal hover:bg-signal-dim/40;
+  }
+  .input {
+    @apply rounded border border-ink-600 bg-ink-850 px-2 py-1.5 text-xs text-ink-100
+           outline-none placeholder:text-ink-400 focus:border-signal-dim;
+  }
+  .label {
+    @apply text-2xs uppercase tracking-wider text-ink-400;
+  }
+}
