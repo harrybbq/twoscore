@@ -1,0 +1,38 @@
+{
+  "name": "twoscore",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "typecheck": "tsc --noEmit",
+    "import": "tsx scripts/import-letterboxd.ts",
+    "backfill": "tsx scripts/backfill-tmdb.ts",
+    "affinities": "tsx scripts/build-affinities.ts",
+    "frame": "tsx scripts/export-training-frame.ts",
+    "fit": "python3 py/fit.py",
+    "retrain": "tsx scripts/retrain.ts",
+    "verify": "tsx scripts/verify-pipeline.ts",
+    "synth": "tsx scripts/make-synthetic-export.ts"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.45.4",
+    "next": "14.2.15",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "unzipper": "^0.12.3"
+  },
+  "devDependencies": {
+    "@types/node": "^22.7.5",
+    "@types/react": "^18.3.11",
+    "@types/react-dom": "^18.3.0",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.47",
+    "tailwindcss": "^3.4.13",
+    "tsx": "^4.19.1",
+    "typescript": "^5.6.3"
+  }
+}

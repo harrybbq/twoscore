@@ -1,0 +1,21 @@
+node_modules/
+.next/
+out/
+dist/
+.env
+.env.local
+.env*.local
+*.tsbuildinfo
+next-env.d.ts
+.venv/
+__pycache__/
+*.pyc
+.DS_Store
+.vercel
+
+# Personal data — never commit the export or anything derived from it
+data/letterboxd/
+data/*.zip
+data/training_frame.json
+data/checkpoints/
+!data/checkpoints/.gitkeep
