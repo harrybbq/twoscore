@@ -27,8 +27,12 @@ export interface ParseReport {
   warnings: string[];
 }
 
-/** Files we deliberately never read.  `lists/gammon.csv` is a joke list. */
-const IGNORED = [/(^|\/)lists\//i, /gammon/i, /comments\.csv$/i];
+/**
+ * Files we deliberately never read.  `lists/gammon.csv` is a joke list.
+ * `deleted/` and `orphaned/` hold diary entries and reviews you deleted (or
+ * whose film is gone), so they must not count as viewings.
+ */
+const IGNORED = [/(^|\/)lists\//i, /gammon/i, /comments\.csv$/i, /(^|\/)(deleted|orphaned)\//i];
 
 export function isIgnored(path: string): boolean {
   return IGNORED.some((re) => re.test(path));
@@ -44,10 +48,17 @@ function date(v: string): string | null {
   return /^\d{4}-\d{2}-\d{2}$/.test(v) ? v : null;
 }
 
-/** Stable identity for a title: the Letterboxd URI if present, else name+year. */
-export function keyOf(name: string, year: number | null, uri: string | null): string {
-  if (uri) return uri.replace(/\/+$/, '');
-  return `${name.toLowerCase()}::${year ?? ''}`;
+/**
+ * Stable identity for a title across the export's files: name + year.
+ *
+ * Not the "Letterboxd URI": in watched.csv and ratings.csv that is the film's
+ * link, but in diary.csv and reviews.csv it is the link to that diary entry or
+ * review, so keying on it splits every diary row off from its film and the
+ * rewatch evidence never reaches the rating.  `uri` is kept in the signature
+ * for callers; it no longer decides identity.
+ */
+export function keyOf(name: string, year: number | null, _uri?: string | null): string {
+  return `${name.trim().toLowerCase()}::${year ?? ''}`;
 }
 
 /**
