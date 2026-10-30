@@ -16,6 +16,7 @@
     "fit": "python3 py/fit.py",
     "retrain": "tsx scripts/retrain.ts",
     "verify": "tsx scripts/verify-pipeline.ts",
+    "verify:cinema": "tsx scripts/verify-cinema.ts",
     "synth": "tsx scripts/make-synthetic-export.ts"
   },
   "dependencies": {

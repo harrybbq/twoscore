@@ -34,6 +34,10 @@ export const env = {
   get cronSecret() {
     return opt('CRON_SECRET');
   },
+  /** Shared secret for the /api/cinema routes CaptureDeck calls. Unset = those routes refuse everything. */
+  get cinemaToken() {
+    return opt('CINEMA_TOKEN');
+  },
   get tmdbCacheDays() {
     return Number(opt('TMDB_CACHE_DAYS') ?? 30);
   },

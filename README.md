@@ -71,6 +71,7 @@ Copy `.env.example` to `.env.local`:
 | `OMDB_API_KEY` | no | required only when the flag is on |
 | `OMDB_CACHE_HOURS` | no | default 24 |
 | `CRON_SECRET` | on Vercel | the cron route rejects anything without `Authorization: Bearer <secret>` |
+| `CINEMA_TOKEN` | for CaptureDeck | the `/api/cinema/*` routes refuse everything until it is set, then require `Authorization: Bearer <token>` |
 
 **On IMDb.** IMDb has no free public API and imdb.com must not be scraped. The
 real IMDb rating only exists when OMDb is enabled, joined on
@@ -191,6 +192,35 @@ dismiss, watchlist — works on mobile.
 **Keyboard, on `/table`:** `j`/`k` move · `x` select · `a` all · `w` watched ·
 `d` not interested · `r` rate · `enter` expand the why panel · `e` export.
 
+## Cinema API (CaptureDeck)
+
+CaptureDeck's Cinema tab unifies the streaming subscriptions; twoscore decides
+what in them is worth watching. Cinema calls these routes live, so a refit here
+shows up there on its next sync with nothing exported. The scorer is not copied
+anywhere: Cinema only ever gets its output.
+
+| Route | Returns |
+|---|---|
+| `GET /api/cinema/status` | `fitted`, `modelVersion` (`feature_version:fitted_at`), both models' metrics and baselines, history count |
+| `GET /api/cinema/history` | every history row resolved to a TMDB id: rating, diary and rewatch counts, the joke-rating flag |
+| `POST /api/cinema/score` | `{ titles: [{ tmdbId, mediaType }] }`, at most 100: both scores, error bars, confidence, Δ, top 3 reasons each |
+
+All three need `Authorization: Bearer <CINEMA_TOKEN>` and refuse with 503
+while the token is unset, because they return personal data.
+
+The difference from the feed: **titles in the history are scored, not
+dropped.** A high Score B on something already seen is the best "what do I
+rewatch tonight" signal, so the cinema wants exactly the case the feed throws
+away. Those titles were in training, so `scoreForCinema` scores them
+leave-one-out (their own rating and rewatch removed from the affinities first),
+as `fit.py`'s frame does. Otherwise Score B would be inflated by the very label
+it predicts. Joke-rated and unrated rows never entered training, so nothing is
+removed for them. Metadata goes through `getTitle`, so the 30-day `tmdb_titles`
+cache is shared with the feed.
+
+`npm run verify:cinema` checks that handling on synthetic data, with no
+database and no Python.
+
 ## Ingest
 
 Vercel Cron hits `/api/cron/ingest` nightly (`vercel.json`, 05:00 UTC). It pulls
@@ -245,6 +275,7 @@ new JSON.
 | `npm run fit` | fit both models (needs the venv) |
 | `npm run retrain` | fold in feedback, then all of the above |
 | `npm run verify` | end-to-end pipeline check on synthetic data |
+| `npm run verify:cinema` | the cinema API's scoring (leave-one-out, TV confidence, validation) on synthetic data |
 
 ## Not built yet
 
