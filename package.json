@@ -17,6 +17,7 @@
     "retrain": "tsx scripts/retrain.ts",
     "verify": "tsx scripts/verify-pipeline.ts",
     "verify:cinema": "tsx scripts/verify-cinema.ts",
+    "build:core": "esbuild src/core/index.ts --bundle --platform=node --format=cjs --target=node20 --legal-comments=none --outfile=dist/twoscore-core.cjs",
     "synth": "tsx scripts/make-synthetic-export.ts"
   },
   "dependencies": {
